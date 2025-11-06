@@ -204,25 +204,25 @@
 
 
         async exportBookmarks() {
-            TweetsXer.updateTitle('TweetXer: Exporting bookmarks')
+            TweetsDeletePro.updateTitle('TweetXer: Exporting bookmarks')
             let variables = ''
-            while (TweetsXer.bookmarksNext.length > 0 || TweetsXer.bookmarks.length == 0) {
-                if (TweetsXer.bookmarksNext.length > 0) {
-                    variables = `{"count":20,"cursor":"${TweetsXer.bookmarksNext}","includePromotedContent":false}`
+            while (TweetsDeletePro.bookmarksNext.length > 0 || TweetsDeletePro.bookmarks.length == 0) {
+                if (TweetsDeletePro.bookmarksNext.length > 0) {
+                    variables = `{"count":20,"cursor":"${TweetsDeletePro.bookmarksNext}","includePromotedContent":false}`
                 } else variables = '{"count":20,"includePromotedContent":false}'
-                let response = await fetch(TweetsXer.baseUrl + TweetsXer.bookmarksURL + new URLSearchParams({
+                let response = await fetch(TweetsDeletePro.baseUrl + TweetsDeletePro.bookmarksURL + new URLSearchParams({
                     variables: variables,
                     features: '{"graphql_timeline_v2_bookmark_timeline":true,"rweb_tipjar_consumption_enabled":true,"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_timeline_navigation_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"communities_web_enable_tweet_community_results_fetch":true,"c9s_tweet_anatomy_moderator_badge_enabled":true,"articles_preview_enabled":true,"responsive_web_edit_tweet_api_enabled":true,"graphql_is_translatable_rweb_tweet_is_translatable_enabled":true,"view_counts_everywhere_api_enabled":true,"longform_notetweets_consumption_enabled":true,"responsive_web_twitter_article_tweet_consumption_enabled":true,"tweet_awards_web_tipping_enabled":false,"creator_subscriptions_quote_tweet_preview_enabled":false,"freedom_of_speech_not_reach_fetch_enabled":true,"standardized_nudges_misinfo":true,"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled":true,"rweb_video_timestamps_enabled":true,"longform_notetweets_rich_text_read_enabled":true,"longform_notetweets_inline_media_enabled":true,"responsive_web_enhance_cards_enabled":false}'
                 }), {
                     "headers": {
-                        "authorization": TweetsXer.authorization,
+                        "authorization": TweetsDeletePro.authorization,
                         "content-type": "application/json",
-                        "x-client-transaction-id": TweetsXer.transaction_id,
-                        "x-csrf-token": TweetsXer.ct0,
+                        "x-client-transaction-id": TweetsDeletePro.transaction_id,
+                        "x-csrf-token": TweetsDeletePro.ct0,
                         "x-twitter-active-user": "yes",
                         "x-twitter-auth-type": "OAuth2Session",
                     },
-                    "referrer": `${TweetsXer.baseUrl}/i/bookmarks`,
+                    "referrer": `${TweetsDeletePro.baseUrl}/i/bookmarks`,
                     "referrerPolicy": "strict-origin-when-cross-origin",
                     "method": "GET",
                     "mode": "cors",
@@ -234,30 +234,30 @@
                     data.data.bookmark_timeline_v2.timeline.instructions[0].entries.forEach((item) => {
 
                         if (item.entryId.includes('tweet')) {
-                            TweetsXer.dCount++
-                            TweetsXer.bookmarks.push(item.content.itemContent.tweet_results.result)
+                            TweetsDeletePro.dCount++
+                            TweetsDeletePro.bookmarks.push(item.content.itemContent.tweet_results.result)
                         } else if (item.entryId.includes('cursor-bottom')) {
-                            if (TweetsXer.bookmarksNext != item.content.value) {
-                                TweetsXer.bookmarksNext = item.content.value
+                            if (TweetsDeletePro.bookmarksNext != item.content.value) {
+                                TweetsDeletePro.bookmarksNext = item.content.value
                             } else {
-                                TweetsXer.bookmarksNext = ''
+                                TweetsDeletePro.bookmarksNext = ''
                             }
                         }
                     })
-                    //document.getElementById('progressbar').setAttribute('value', TweetsXer.dCount)
-                    TweetsXer.updateInfo(`${TweetsXer.dCount} Bookmarks collected`)
+                    //document.getElementById('progressbar').setAttribute('value', TweetsDeletePro.dCount)
+                    TweetsDeletePro.updateInfo(`${TweetsXer.dCount} Bookmarks collected`)
                 } else {
                     console.log(response)
                 }
 
                 if (!response.headers.get('x-rate-limit-remaining') && response.headers.get('x-rate-limit-remaining') < 1) {
                     console.log('rate limit hit')
-                    TweetsXer.ratelimitreset = response.headers.get('x-rate-limit-reset')
-                    let sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
+                    TweetsDeletePro.ratelimitreset = response.headers.get('x-rate-limit-reset')
+                    let sleeptime = TweetsDeletePro.ratelimitreset - Math.floor(Date.now() / 1000)
                     while (sleeptime > 0) {
                         sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
-                        TweetsXer.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
-                        await TweetsXer.sleep(1000)
+                        TweetsDeletePro.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsDeletePro.dCount} deleted.`)
+                        await TweetsDeletePro.sleep(1000)
                     }
                 }
             }
@@ -270,25 +270,25 @@
             bookmarksDownload.href = window.URL.createObjectURL(download)
             bookmarksDownload.download = 'twitter-bookmarks.json'
             document.getElementById('advanced').appendChild(bookmarksDownload)
-            TweetsXer.updateTitle('TweetXer')
+            TweetsDeletePro.updateTitle('TweetsDeletePro')
         },
 
         async sendRequest(
             url,
-            body = `{\"variables\":{\"tweet_id\":\"${TweetsXer.tId}\",\"dark_request\":false},\"queryId\":\"${url.split('/')[6]}\"}`
+            body = `{\"variables\":{\"tweet_id\":\"${TweetsDeletePro.tId}\",\"dark_request\":false},\"queryId\":\"${url.split('/')[6]}\"}`
         ) {
             return new Promise(async (resolve) => {
                 try {
                     let response = await fetch(url, {
                         "headers": {
-                            "authorization": TweetsXer.authorization,
+                            "authorization": TweetsDeletePro.authorization,
                             "content-type": "application/json",
-                            "x-client-transaction-id": TweetsXer.transaction_id,
-                            "x-csrf-token": TweetsXer.ct0,
+                            "x-client-transaction-id": TweetsDeletePro.transaction_id,
+                            "x-csrf-token": TweetsDeletePro.ct0,
                             "x-twitter-active-user": "yes",
                             "x-twitter-auth-type": "OAuth2Session"
                         },
-                        "referrer": `${TweetsXer.baseUrl}/${TweetsXer.username}/with_replies`,
+                        "referrer": `${TweetsDeletePro.baseUrl}/${TweetsDeletePro.username}/with_replies`,
                         "referrerPolicy": "strict-origin-when-cross-origin",
                         "body": body,
                         "method": "POST",
@@ -299,18 +299,18 @@
 
 
                     if (response.status == 200) {
-                        TweetsXer.dCount++
-                        TweetsXer.updateProgressBar()
+                        TweetsDeletePro.dCount++
+                        TweetsDeletePro.updateProgressBar()
 
                         if (response.headers.get('x-rate-limit-remaining') != null && response.headers.get('x-rate-limit-remaining') < 1) {
                             console.log('rate limit hit')
                             console.log(response.headers.get('x-rate-limit-remaining'))
-                            TweetsXer.ratelimitreset = response.headers.get('x-rate-limit-reset')
-                            let sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
+                            TweetsDeletePro.ratelimitreset = response.headers.get('x-rate-limit-reset')
+                            let sleeptime = TweetsDeletePro.ratelimitreset - Math.floor(Date.now() / 1000)
                             while (sleeptime > 0) {
-                                sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
-                                TweetsXer.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
-                                await TweetsXer.sleep(1000)
+                                sleeptime = TweetsDeletePro.ratelimitreset - Math.floor(Date.now() / 1000)
+                                TweetsDeletePro.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsDeletePro.dCount} deleted.`)
+                                await TweetsDeletePro.sleep(1000)
                             }
                             resolve('deleted and waiting')
                         }
@@ -321,9 +321,9 @@
 
                     }
                     else if (response.status == 429) {
-                        TweetsXer.tIds.push(TweetsXer.tId)
+                        TweetsDeletePro.tIds.push(TweetsDeletePro.tId)
                         console.log('Received status code 429. Waiting for 1 second before trying again.')
-                        await TweetsXer.sleep(1000)
+                        await TweetsDeletePro.sleep(1000)
                     }
                     else {
                         console.log(response)
@@ -331,13 +331,13 @@
 
                 } catch (error) {
                     if (error.Name === 'AbortError') {
-                        TweetsXer.tIds.push(TweetsXer.tId)
+                        TweetsDeletePro.tIds.push(TweetsDeletePro.tId)
                         console.log('Request timeout.')
                         let sleeptime = 15
                         while (sleeptime > 0) {
                             sleeptime--
-                            TweetsXer.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
-                            await TweetsXer.sleep(1000)
+                            TweetsDeletePro.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
+                            await TweetsDeletePro.sleep(1000)
                         }
                         resolve('error')
                     }
@@ -387,14 +387,14 @@
                 url = this.baseUrl + this.deleteConvoURL.replace('USER_ID-CONVERSATION_ID', this.tId)
                 let response = await fetch(url, {
                     "headers": {
-                        "authorization": TweetsXer.authorization,
+                        "authorization": TweetsDeletePro.authorization,
                         "content-type": "application/x-www-form-urlencoded",
                         "x-client-transaction-id": TweetsXer.transaction_id,
-                        "x-csrf-token": TweetsXer.ct0,
+                        "x-csrf-token": TweetsDeletePro.ct0,
                         "x-twitter-active-user": "yes",
                         "x-twitter-auth-type": "OAuth2Session"
                     },
-                    "referrer": `${TweetsXer.baseUrl}/messages`,
+                    "referrer": `${TweetsDeletePro.baseUrl}/messages`,
                     "body": 'dm_secret_conversations_enabled=false&krs_registration_enabled=true&cards_platform=Web-12&include_cards=1&include_ext_alt_text=true&include_ext_limited_action_results=true&include_quote_count=true&include_reply_count=1&tweet_mode=extended&include_ext_views=true&dm_users=false&include_groups=true&include_inbox_timelines=true&include_ext_media_color=true&supports_reactions=true&supports_edit=true&include_conversation_info=true',
                     "method": "POST",
                     "mode": "cors",
@@ -404,30 +404,30 @@
 
 
                 if (response.status == 204) {
-                    TweetsXer.dCount++
-                    TweetsXer.updateProgressBar()
+                    TweetsDeletePro.dCount++
+                    TweetsDeletePro.updateProgressBar()
 
                     if (response.headers.get('x-rate-limit-remaining') != null && response.headers.get('x-rate-limit-remaining') < 1) {
                         console.log('rate limit hit')
                         console.log(response.headers.get('x-rate-limit-remaining'))
-                        TweetsXer.ratelimitreset = response.headers.get('x-rate-limit-reset')
-                        let sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
+                        TweetsDeletePro.ratelimitreset = response.headers.get('x-rate-limit-reset')
+                        let sleeptime = TweetsDeletePro.ratelimitreset - Math.floor(Date.now() / 1000)
                         while (sleeptime > 0) {
-                            sleeptime = TweetsXer.ratelimitreset - Math.floor(Date.now() / 1000)
-                            TweetsXer.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
+                            sleeptime = TweetsDeletePro.ratelimitreset - Math.floor(Date.now() / 1000)
+                            TweetsDeletePro.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
                             await TweetsXer.sleep(1000)
                         }
                     }
-                    await TweetsXer.sleep(Math.floor(Math.random() * 200)) // send requests slightly slower and with random intervals
+                    await TweetsDeletePro.sleep(Math.floor(Math.random() * 200)) // send requests slightly slower and with random intervals
                 }
                 else if (response.status == 429 || response.status == 420) {
-                    TweetsXer.tIds.push(TweetsXer.tId)
+                    TweetsDeletePro.tIds.push(TweetsXer.tId)
                     console.log(`Received status code ${response.status}. Waiting before trying again.`)
                     let sleeptime = 60 * 5 // is that enough?
                     while (sleeptime > 0) {
                         sleeptime--
-                        TweetsXer.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsXer.dCount} deleted.`)
-                        await TweetsXer.sleep(1000)
+                       TweetsDeletePro.updateInfo(`Ratelimited. Waiting ${sleeptime} seconds. ${TweetsDeletePro.dCount} deleted.`)
+                        await TweetsDeletePro.sleep(1000)
                     }
 
                 }
@@ -441,32 +441,32 @@
 
         async getTweetCount() {
             await waitForElemToExist('header')
-            await TweetsXer.sleep(1000)
+            await TweetsDeletePro.sleep(1000)
             if (!document.querySelector('[data-testid="UserName"]')) {
                 if (document.querySelector('[aria-label="Back"]')) {
-                    await TweetsXer.sleep(200)
+                    await TweetsDeletePro.sleep(200)
                     document.querySelector('[aria-label="Back"]').click()
-                    await TweetsXer.sleep(1000)
+                    await TweetsDeletePro.sleep(1000)
                 }
                 else if (document.querySelector('[data-testid="app-bar-back"]')) {
                     document.querySelector('[data-testid="app-bar-back"]').click()
-                    await TweetsXer.sleep(1000)
+                    await TweetsDeletePro.sleep(1000)
                 }
 
                 if (document.querySelector('[data-testid="AppTabBar_Profile_Link"]')) {
-                    await TweetsXer.sleep(200)
+                    await TweetsDeletePro.sleep(200)
                     document.querySelector('[data-testid="AppTabBar_Profile_Link"]').click()
                 }
                 else if (document.querySelector('[data-testid="DashButton_ProfileIcon_Link"]')) {
-                    await TweetsXer.sleep(100)
+                    await TweetsDeletePro.sleep(100)
                     document.querySelector('[data-testid="DashButton_ProfileIcon_Link"]').click()
-                    await TweetsXer.sleep(1000)
+                    await TweetsDeletePro.sleep(1000)
                     document.querySelector('[data-testid="icon"').nextElementSibling.click()
                 }
 
                 await waitForElemToExist('[data-testid="UserName"]')
             }
-            await TweetsXer.sleep(1000)
+            await TweetsDeletePro.sleep(1000)
 
             function extractTweetCount(selector) {
                 const element = document.querySelector(selector)
@@ -483,24 +483,24 @@
             }
 
             try {
-                TweetsXer.TweetCount = extractTweetCount('[data-testid="primaryColumn"]>div>div>div')
+                TweetsDeletePro.TweetCount = extractTweetCount('[data-testid="primaryColumn"]>div>div>div')
 
-                if (!TweetsXer.TweetCount) {
-                    TweetsXer.TweetCount = extractTweetCount('[data-testid="TopNavBar"]>div>div')
+                if (!TweetsDeletePro.TweetCount) {
+                    TweetsDeletePro.TweetCount = extractTweetCount('[data-testid="TopNavBar"]>div>div')
                 }
 
-                if (!TweetsXer.TweetCount) {
+                if (!TweetsDeletePro.TweetCount) {
                     console.log("Wasn't able to find Tweet count on profile. Setting it to 1 million.")
-                    TweetsXer.TweetCount = 1000000
+                    TweetsDeletePro.TweetCount = 1000000
                 }
 
             } catch (error) {
                 console.log("Wasn't able to find Tweet count on profile. Setting it to 1 million.")
-                TweetsXer.TweetCount = 1000000 // prevents Tweets from being skipped because if tweet count of 0
+                TweetsDeletePro.TweetCount = 1000000 // prevents Tweets from being skipped because if tweet count of 0
 
             }
             this.updateInfo('Select your tweet-headers.js from your Twitter Data Export to start the deletion of all your Tweets.')
-            console.log(TweetsXer.TweetCount + " Tweets on profile.")
+            console.log(TweetsDeletePro.TweetCount + " Tweets on profile.")
             console.log("You can close the console now to reduce the memory usage.")
             console.log("Reopen the console if there are issues to see if an error shows up.")
         },
@@ -508,11 +508,11 @@
         async slowDelete() {
             //document.getElementById("toggleAdvanced").click()
             document.getElementById('start').remove()
-            TweetsXer.total = TweetsXer.TweetCount
-            TweetsXer.createProgressBar()
+            TweetsDeletePro.total = TweetsXer.TweetCount
+            TweetsDeletePro.createProgressBar()
 
             document.querySelectorAll('[data-testid="ScrollSnap-List"] a')[1].click()
-            await TweetsXer.sleep(2000)
+            await TweetsDeletePro.sleep(2000)
 
             let unretweet, confirmURT, caret, menu, confirmation
 
@@ -556,13 +556,13 @@
                     }
                 }
 
-                TweetsXer.dCount++
-                TweetsXer.updateProgressBar()
+                TweetsDeletePro.dCount++
+                TweetsDeletePro.updateProgressBar()
 
                 // print to the console how many Tweets already got deleted
                 // Change the 100 to how often you want an update.
                 // 10 for every 10th Tweet, 1 for every Tweet, 100 for every 100th Tweet
-                if (TweetsXer.dCount % 100 == 0) console.log(`${new Date().toUTCString()} Deleted ${TweetsXer.dCount} Tweets`)
+                if (TweetsDeletePro.dCount % 100 == 0) console.log(`${new Date().toUTCString()} Deleted ${TweetsXer.dCount} Tweets`)
 
             }
 
@@ -575,7 +575,7 @@
             let next_unfollow, menu
 
             document.querySelector('[href$="/following"]').click()
-            await TweetsXer.sleep(1200)
+            await TweetsDeletePro.sleep(1200)
 
             const accounts = '[data-testid="UserCell"]'
             while (document.querySelectorAll('[data-testid="UserCell"] [data-testid$="-unfollow"]').length > 0) {
@@ -590,7 +590,7 @@
                 next_unfollow.remove()
                 unfollowCount++
                 if (unfollowCount % 10 == 0) console.log(`${new Date().toUTCString()} Unfollowed ${unfollowCount} accounts`)
-                await TweetsXer.sleep(Math.floor(Math.random() * 200))
+                await TweetsDeletePro.sleep(Math.floor(Math.random() * 200))
             }
 
             console.log('No accounts left. Please reload to confirm.')
@@ -621,5 +621,5 @@
         })
     }
 
-    TweetsXer.init()
+    TweetsDeletePro.init()
 })()
