@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         TweetDeletePro
-// @namespace    https://github.com/bodhisunn-dev/TweetDeletePro/
+// @name         TweetXer
+// @namespace    https://github.com/lucahammer/tweetXer/
 // @version      0.9.3
 // @description  Delete all your Tweets for free.
-// @author       Bodhisunn-Dev
+// @author       Luca,dbort,pReya,Micolithe,STrRedWolf
 // @license      NoHarm-draft
 // @match        https://x.com/*
 // @match        https://mobile.x.com/*
@@ -672,7 +672,4 @@
     }
 
     TweetsXer.init()
-})()
-
-    TweetsDeletePro.init()
 })()
